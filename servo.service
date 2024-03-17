@@ -1,0 +1,14 @@
+[Unit]
+Description=servo
+After=network-online.target
+Wants=network-online.target systemd-networkd-wait-online.service
+StartLimitIntervalSec=0
+
+[Service]
+Restart=always
+RestartSec=10
+EOF
+ExecStart=/usr/bin/python3 /usr/bin/servo.py
+
+[Install]
+WantedBy=multi-user.target
