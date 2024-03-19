@@ -46,7 +46,7 @@ def on_connect(client, userdata, flags, rc):
             ]
     )
 
-client = mqttClient.Client("Python")
+client = mqttClient.Client(mqttClient.CallbackAPIVersion.VERSION1, "Python")
 client.username_pw_set(user, password=password)
 client.tls_set(ca_certs=ca)
 client.tls_insecure_set(True)
