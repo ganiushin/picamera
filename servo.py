@@ -19,10 +19,10 @@ p1.start(0)
 p2.start(0)
 
 port = 8883
-host = "smarthome.half.ws"
+host = "host"
 user = "user"
 password = "passwd"
-ca = "/home/pi/isrgrootx1.pem"
+ca = "isrgrootx1.pem"
 sub_topic = "b1/camera_rotate"
 
 def on_message(client, userdata, message):
