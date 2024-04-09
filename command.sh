@@ -50,4 +50,4 @@ echo 'start_x=1' | sudo tee -a /boot/firmware/config.txt
 echo 'gpu_mem=128' | sudo tee -a /boot/firmware/config.txt
 
 # Настройки применятся после перезагрузки
-echo "Необходимо перезагрузить устройство для применения изменений."
+echo "Необходимо перезагрузить устройство для применения изменений. И добавить ipv6.disable=1 в /boot/firmware/cmdline.txt"
