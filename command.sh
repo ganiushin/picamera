@@ -39,7 +39,9 @@ git clone https://github.com/mpromonet/v4l2rtspserver.git
 sudo apt install make cmake
 
 # Установка v4l2rtspserver
-cd /home/pi/v4l2rtspserver && cmake . && make && sudo make install
+cd /home/pi/v4l2rtspserver
+cmake . && make
+sudo make install
 
 # Изменение конфигурации камеры
 sudo sed -i '/camera_auto_detect=1/d' /boot/firmware/config.txt
