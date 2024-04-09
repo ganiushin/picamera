@@ -28,7 +28,6 @@ sudo systemctl start firewalld
 
 # Добавление правил в firewall
 sudo firewall-cmd --permanent --add-rich-rule 'rule family="ipv4" source address="192.168.1.56" port port="8554" protocol="tcp" accept'
-sudo firewall-cmd --permanent --add-rich-rule 'rule family="ipv4" source address="192.168.1.56" port port="8554" protocol="udp" accept'
 sudo firewall-cmd --permanent --remove-service=dhcpv6-client
 sudo firewall-cmd --permanent --add-port=8883/tcp
 
