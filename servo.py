@@ -37,7 +37,7 @@ def on_message(client, userdata, message):
     p2.ChangeDutyCycle(0)
 
 
-def on_connect(client, userdata, reasonCode, properties):
+def on_connect(client, userdata, flags, reasonCode, properties):
     print("Connected with result code "+str(reasonCode))
 
     client.subscribe(
