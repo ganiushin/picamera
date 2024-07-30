@@ -37,8 +37,8 @@ def on_message(client, userdata, message):
     p2.ChangeDutyCycle(0)
 
 
-def on_connect(client, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
+def on_connect(client, userdata, reasonCode, properties):
+    print("Connected with result code "+str(reasonCode))
 
     client.subscribe(
             [
@@ -46,7 +46,7 @@ def on_connect(client, userdata, flags, rc):
             ]
     )
 
-client = mqttClient.Client(mqttClient.CallbackAPIVersion.VERSION1, "Python")
+client = mqttClient.Client(mqttClient.CallbackAPIVersion.VERSION2, "Python")
 client.username_pw_set(user, password=password)
 client.tls_set(ca_certs=ca)
 client.tls_insecure_set(True)
