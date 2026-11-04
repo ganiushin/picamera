@@ -1,5 +1,7 @@
 __pycache__/
 servo.env
+setup.env
+setup.log
 mediamtx.yml
 server.key
 server.crt

@@ -17,7 +17,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # === Конфигурация ===
-# Аппаратный ШИМ, оверлей pwm-2chan загружает servo.service:
+# Аппаратный ШИМ, оверлей pwm-2chan задан в /boot/firmware/config.txt:
 # GPIO 12 (BCM) - канал PWM0, физический пин 32
 # GPIO 13 (BCM) - канал PWM1, физический пин 33
 PWM_CHIP = Path("/sys/class/pwm/pwmchip0")
