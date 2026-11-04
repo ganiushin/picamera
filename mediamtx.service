@@ -1,0 +1,15 @@
+[Unit]
+Description=MediaMTX camera stream
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/mediamtx
+ExecStart=/home/pi/mediamtx/mediamtx /home/pi/mediamtx/mediamtx.yml
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

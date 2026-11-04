@@ -1,14 +1,18 @@
 [Unit]
-Description=servo
+Description=Camera rotate servo controller
 After=network-online.target
 Wants=network-online.target systemd-networkd-wait-online.service
 StartLimitIntervalSec=0
 
 [Service]
+User=pi
+NoNewPrivileges=yes
+EnvironmentFile=/etc/picamera/servo.env
+# Аппаратный ШИМ на GPIO 12 и 13. Префикс + запускает команду от root.
+ExecStartPre=+/bin/sh -c 'dtoverlay -l | grep -q pwm-2chan || dtoverlay pwm-2chan pin=12 func=4 pin2=13 func2=4'
+ExecStart=/usr/bin/python3 /usr/bin/servo.py
 Restart=always
 RestartSec=10
-EOF
-ExecStart=/usr/bin/python3 /usr/bin/servo.py
 
 [Install]
 WantedBy=multi-user.target

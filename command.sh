@@ -1,53 +1,48 @@
 #!/bin/bash
+# Установка на Raspberry Pi Zero W: серво (MQTT) и камера (MediaMTX).
+# Запускать из каталога репозитория: cd /home/pi/picamera && ./command.sh
+set -e
 
-# Установка python3-pip
-sudo apt install python3-pip
+# Последняя версия с поддержкой камеры на Debian Bullseye: в v1.21.0 она убрана
+MEDIAMTX_VERSION=v1.20.1
+MEDIAMTX_DIR=/home/pi/mediamtx
 
-# Установка paho-mqtt через pip3
-sudo pip3 install paho-mqtt --break-system-packages
+# paho-mqtt 2.x нет в пакетах Bullseye
+sudo apt install -y python3-pip
+pip3 install --user paho-mqtt
 
-# Копирование сертификата в домашний каталог
-cp /home/pi/picamera/isrgrootx1.pem /home/pi/
+# Сервоприводы
+cp isrgrootx1.pem /home/pi/
+sudo install -m 644 servo.py /usr/bin/servo.py
+sudo install -m 644 servo.service /etc/systemd/system/servo.service
+sudo install -d -m 755 /etc/picamera
+if ! sudo test -f /etc/picamera/servo.env; then
+    sudo install -m 600 servo.env.example /etc/picamera/servo.env
+    echo "Заполните /etc/picamera/servo.env"
+fi
 
-# Копирование скрипта для работы с сервоприводом
-sudo cp /home/pi/picamera/servo.py /usr/bin/
+# Камера
+mkdir -p "$MEDIAMTX_DIR"
+curl -fsSL "https://github.com/bluenviron/mediamtx/releases/download/${MEDIAMTX_VERSION}/mediamtx_${MEDIAMTX_VERSION}_linux_armv6.tar.gz" \
+    | tar -xz -C "$MEDIAMTX_DIR" mediamtx
+if [ ! -f "$MEDIAMTX_DIR/mediamtx.yml" ]; then
+    install -m 600 mediamtx.yml.example "$MEDIAMTX_DIR/mediamtx.yml"
+    echo "Заполните пользователя, пароль и адреса клиентов в $MEDIAMTX_DIR/mediamtx.yml"
+fi
+if [ ! -f "$MEDIAMTX_DIR/server.key" ]; then
+    (
+        umask 077
+        openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes \
+            -keyout "$MEDIAMTX_DIR/server.key" -out "$MEDIAMTX_DIR/server.crt" -days 3650 \
+            -subj "/CN=picamera" -addext "subjectAltName=IP:$(hostname -I | cut -d' ' -f1)"
+    )
+    chmod 644 "$MEDIAMTX_DIR/server.crt"
+fi
+sudo install -m 644 mediamtx.service /etc/systemd/system/mediamtx.service
 
-# Копирование сервиса для управления сервоприводами
-sudo cp /home/pi/picamera/servo.service /etc/systemd/system/
-
-# Перечитываем конфигурацию systemd
 sudo systemctl daemon-reload
+sudo systemctl enable servo.service mediamtx.service
 
-# Включаем сервис servo.service
-sudo systemctl enable servo.service
-
-# Установка и настройка firewalld
-sudo apt install firewalld
-sudo systemctl enable firewalld
-sudo systemctl start firewalld
-
-# Добавление правил в firewall
-sudo firewall-cmd --permanent --add-rich-rule 'rule family="ipv4" source address="192.168.1.56" port port="8554" protocol="tcp" accept'
-sudo firewall-cmd --permanent --remove-service=dhcpv6-client
-sudo firewall-cmd --permanent --add-port=8883/tcp
-
-# Клонирование v4l2rtspserver
-git clone https://github.com/mpromonet/v4l2rtspserver.git
-
-# Установка make и cmake
-sudo apt install make cmake
-
-# Установка v4l2rtspserver
-cd /home/pi/v4l2rtspserver
-cmake . && make
-sudo make install
-
-# Изменение конфигурации камеры
-sudo sed -i '/camera_auto_detect=1/d' /boot/firmware/config.txt
-sudo sed -i '/start_x=1/d' /boot/firmware/config.txt
-sudo sed -i '/gpu_mem=128/d' /boot/firmware/config.txt
-echo 'start_x=1' | sudo tee -a /boot/firmware/config.txt
-echo 'gpu_mem=128' | sudo tee -a /boot/firmware/config.txt
-
-# Настройки применятся после перезагрузки
-echo "Необходимо перезагрузить устройство для применения изменений. И добавить ipv6.disable=1 в /boot/firmware/cmdline.txt"
+# Камера Module 3 (imx708): в /boot/config.txt нужны camera_auto_detect=0 и dtoverlay=imx708
+# Порты закрываются через iptables (netfilter-persistent): SSH и клиенты из mediamtx.yml
+echo "Проверьте настройки камеры в /boot/config.txt и перезагрузите устройство."

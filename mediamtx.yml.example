@@ -1,0 +1,56 @@
+# === Глобальные настройки ===
+logLevel: error
+logDestinations: [stdout]
+
+# Тайм-ауты (важно для слабого Wi-Fi)
+#readTimeout: 10s
+#writeTimeout: 10s
+#writeQueueSize: 512 # Увеличили буфер для компенсации лагов Wi-Fi
+
+# === Сервер RTSP ===
+rtsp: yes
+rtspAddress: :8554
+rtspTransports: [tcp] # Видео идёт внутри TLS-соединения, отдельные порты SRTP не нужны
+# Только RTSPS на 8322, открытый RTSP на 8554 закрыт
+rtspEncryption: strict
+rtspsAddress: :8322
+rtspServerKey: /home/pi/mediamtx/server.key
+rtspServerCert: /home/pi/mediamtx/server.crt
+rtspAuthMethods: [basic]
+
+# === Авторизация ===
+authMethod: internal
+authInternalUsers:
+  - user: change-me
+    pass: change-me
+    ips: ['192.168.1.10'] # Адреса клиентов, например Home Assistant
+    permissions:
+      - action: publish
+      - action: read
+
+# === Отключаем лишнее (экономим ОЗУ) ===
+rtmp: no
+hls: no
+webrtc: no
+srt: no
+moq: no
+api: no
+metrics: no
+pprof: no
+
+# === Настройки путей (Камера) ===
+paths:
+  cam: # Стрим будет доступен по адресу rtsp://ip:8554/cam
+    source: rpiCamera
+    sourceOnDemand: yes         # Камера и кодировщик работают, только пока есть зрители
+    rpiCameraCodec: hardwareH264
+    #rpiCameraWidth: 1536
+    #rpiCameraHeight: 864
+    rpiCameraWidth: 1280
+    rpiCameraHeight: 720
+    #rpiCameraWidth: 1024
+    #rpiCameraHeight: 768
+    rpiCameraBitrate: 800000   # Оставляем этот низкий битрейт для стабильности WiFi
+    rpiCameraFPS: 10            # 10 кадров — это секрет отсутствия лагов на Zero
+    rpiCameraHDR: true          # ВКЛЮЧАЕМ ОБРАТНО для борьбы с окном
+    rpiCameraIDRPeriod: 20      # Ключевой кадр раз в 2 с: быстрее старт и восстановление после потерь по UDP

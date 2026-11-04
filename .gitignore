@@ -1,0 +1,6 @@
+__pycache__/
+servo.env
+mediamtx.yml
+server.key
+server.crt
+backup-*/
