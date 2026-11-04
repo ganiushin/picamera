@@ -104,11 +104,14 @@ systemctl enable servo.service mediamtx.service nftables.service
 echo "--- Часовой пояс"
 timedatectl set-timezone "$TIMEZONE"
 
+echo "--- IPv6 выключен через sysctl: с ipv6.disable=1 таблица inet в nftables может не загрузиться"
+printf 'net.ipv6.conf.all.disable_ipv6=1\nnet.ipv6.conf.default.disable_ipv6=1\nnet.ipv6.conf.lo.disable_ipv6=1\n' > /etc/sysctl.d/90-disable-ipv6.conf
+
 echo "--- Wi-Fi: страна, энергосбережение, статический адрес"
 sed -i -E "s/cfg80211\.ieee80211_regdom=[A-Z]+/cfg80211.ieee80211_regdom=$WIFI_COUNTRY/" /boot/firmware/cmdline.txt
 printf '[connection]\nwifi.powersave=2\n' > /etc/NetworkManager/conf.d/10-wifi-powersave-off.conf
 WIFI_CONNECTION=$(nmcli -t -f NAME,DEVICE connection show --active | awk -F: '$2 == "wlan0" {print $1}')
-nmcli connection modify "$WIFI_CONNECTION" ipv4.method manual ipv4.addresses "$STATIC_IP/24" ipv4.gateway "$GATEWAY" ipv4.dns "$DNS"
+nmcli connection modify "$WIFI_CONNECTION" ipv4.method manual ipv4.addresses "$STATIC_IP/24" ipv4.gateway "$GATEWAY" ipv4.dns "$DNS" ipv6.method disabled
 
 echo "=== $(date) готово, перезагрузка"
 systemctl reboot
