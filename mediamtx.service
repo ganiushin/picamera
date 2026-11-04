@@ -6,6 +6,7 @@ StartLimitIntervalSec=0
 
 [Service]
 User=pi
+NoNewPrivileges=yes
 WorkingDirectory=/home/pi/mediamtx
 ExecStart=/home/pi/mediamtx/mediamtx /home/pi/mediamtx/mediamtx.yml
 Restart=always

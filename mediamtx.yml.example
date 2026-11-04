@@ -50,7 +50,7 @@ paths:
     rpiCameraHeight: 720
     #rpiCameraWidth: 1024
     #rpiCameraHeight: 768
-    rpiCameraBitrate: 800000   # Оставляем этот низкий битрейт для стабильности WiFi
-    rpiCameraFPS: 10            # 10 кадров — это секрет отсутствия лагов на Zero
+    rpiCameraBitrate: 1200000  # 80 кбит/с на кадр в секунду, меняется вместе с FPS
+    rpiCameraFPS: 15            # 20 тоже работает, но с двумя зрителями впритык, 30 Zero не тянет
     rpiCameraHDR: true          # ВКЛЮЧАЕМ ОБРАТНО для борьбы с окном
-    rpiCameraIDRPeriod: 20      # Ключевой кадр раз в 2 с: быстрее старт и восстановление после потерь по UDP
+    rpiCameraIDRPeriod: 30      # Ключевой кадр раз в 2 с: быстрее старт и восстановление после потерь
