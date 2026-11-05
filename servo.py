@@ -23,10 +23,14 @@ logger = logging.getLogger(__name__)
 PWM_CHIP = Path("/sys/class/pwm/pwmchip0")
 SERVO1_CHANNEL = 0
 SERVO2_CHANNEL = 1
-SERVO1_MIN = 6.0
-SERVO1_MAX = 10.0
-SERVO2_MIN = 1.0
-SERVO2_MAX = 12.5
+# Вертикаль: обычный серво на 180°
+SERVO1_MIN = 5.0
+SERVO1_MAX = 11.0
+# Горизонталь: временно серво на 360°, значение задаёт скорость и направление, а не положение.
+# Диапазон узкий, чтобы он не разгонялся: упора нет, и шлейф можно намотать.
+# После замены на серво 180° подобрать заново, не ниже 2.5 (500 мкс).
+SERVO2_MIN = 6.0
+SERVO2_MAX = 9.0
 PWM_FREQUENCY = 50  # Hz для сервомоторов
 PWM_PERIOD_NS = 1_000_000_000 // PWM_FREQUENCY
 PWM_PULSE_DURATION = 0.05  # секунды
